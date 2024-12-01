@@ -18,9 +18,8 @@ import {
 } from "~/drizzle/schema.server";
 import { Await, Link, redirect, useLoaderData } from "@remix-run/react";
 import { InferSelectModel, eq } from "drizzle-orm";
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 import { RiContactsBookLine, RiStackLine, RiUserLine } from "@remixicon/react";
-import React from "react";
 
 export const meta: MetaFunction = () => {
 	return [
