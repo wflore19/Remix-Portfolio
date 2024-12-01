@@ -37,7 +37,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
-				<Theme accentColor="gold" appearance="dark" radius="large">
+				<Theme accentColor="gold" appearance="dark" radius="small">
 					{children}
 				</Theme>
 				<ScrollRestoration />
