@@ -122,7 +122,7 @@ function NavItem({ page }: { page: Page }) {
 							transition: "background-color 0.2s ease-in-out",
 						}}>
 						{page.icon}
-						<Text size={"5"} ml={"2"}>
+						<Text size={{ initial: "3", md: "5" }} ml={"2"}>
 							{page.title}
 						</Text>
 					</Flex>
