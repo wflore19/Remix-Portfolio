@@ -9,7 +9,7 @@ import {
 	Text,
 } from "@radix-ui/themes";
 import { Await, useLoaderData } from "@remix-run/react";
-import { RiLink } from "@remixicon/react";
+import { RiGlobalLine, RiLink } from "@remixicon/react";
 import { Suspense } from "react";
 import { db } from "~/drizzle/db.server";
 import { Projects } from "~/drizzle/queries/project";
@@ -65,12 +65,23 @@ export default function ProjectsPage() {
 								<Heading>{project.name}</Heading>
 								<Box>
 									<Link
+										href={project.websiteUrl}
+										target={"_blank"}
+										style={{ display: "inline-block" }}>
+										<Flex gap={"1"} align={"center"}>
+											<RiGlobalLine size={12} />
+											<Text>{project.websiteUrl}</Text>
+										</Flex>
+									</Link>
+								</Box>
+								<Box>
+									<Link
 										href={project.githubUrl}
 										target={"_blank"}
 										style={{ display: "inline-block" }}>
 										<Flex gap={"1"} align={"center"}>
 											<RiLink size={12} />
-											<Text size={"1"}>{project.githubUrl}</Text>
+											<Text>{project.githubUrl}</Text>
 										</Flex>
 									</Link>
 								</Box>
