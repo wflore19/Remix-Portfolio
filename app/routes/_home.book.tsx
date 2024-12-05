@@ -1,5 +1,6 @@
 import {
 	Avatar,
+	Badge,
 	Box,
 	Button,
 	Flex,
@@ -24,7 +25,7 @@ import {
 	getGuestBookEntries,
 	GuestBookEntry,
 } from "~/drizzle/queries/book";
-import { getTimeAgo } from "~/utils/format";
+import { getTimeAgo, isNew } from "~/utils/format";
 import {
 	ensureUserAuthenticated,
 	getSession,
@@ -97,26 +98,19 @@ export default function BookPage() {
 													radius="full"
 													fallback={post.firstName![0]}
 												/>
-												<Flex
-													direction="column"
-													gap={{
-														initial: "0",
-														md: "1",
-													}}>
-													<Text
-														size={{
-															initial: "4",
-															md: "2",
-														}}
-														weight="medium">
+												<Flex direction="column">
+													<Text weight="medium">
 														{`${post.firstName}`}
 													</Text>
-													<Text
-														size={{
-															initial: "1",
-															md: "2",
-														}}>
-														{getTimeAgo(post.createdAt!)}
+													<Text size={"1"}>
+														{getTimeAgo(post.createdAt!)}{" "}
+														{isNew(post.createdAt!) && (
+															<Badge
+																variant="outline"
+																color="green">
+																New
+															</Badge>
+														)}
 													</Text>
 												</Flex>
 											</Flex>
