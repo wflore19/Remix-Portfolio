@@ -16,6 +16,8 @@
 		"drizzle:studio": "drizzle-kit studio --port=3000"
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.705.0",
+		"@aws-sdk/lib-storage": "^3.705.0",
 		"@radix-ui/themes": "^3.1.6",
 		"@remix-run/node": "^2.15.0",
 		"@remix-run/react": "^2.15.0",
@@ -24,6 +26,7 @@
 		"dotenv": "^16.4.5",
 		"drizzle-orm": "^0.36.4",
 		"drizzle-seed": "^0.1.2",
+		"googleapis": "^144.0.0",
 		"isbot": "^4.1.0",
 		"pg": "^8.13.1",
 		"react": "^18.2.0",
