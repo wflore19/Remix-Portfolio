@@ -17,3 +17,21 @@ export async function getProject(id: number) {
 		.where(eq(projectsTable.id, id));
 	return project;
 }
+
+export async function createProject(
+	name: string,
+	description: string,
+	githubUrl: string,
+	imageUrl: string,
+	websiteUrl: string,
+	tags: string
+) {
+	await db.insert(projectsTable).values({
+		name,
+		description,
+		githubUrl,
+		imageUrl,
+		websiteUrl,
+		tags,
+	});
+}
