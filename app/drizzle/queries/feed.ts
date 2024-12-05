@@ -4,13 +4,14 @@ import { User } from "./users";
 import { db } from "../db.server";
 
 export type Feed = InferSelectModel<typeof feedTable>;
-export type FeedPost = Partial<User> & Partial<Feed>;
+export type FeedPost = Pick<User, "profilePicture" | "firstName"> &
+	Pick<Feed, "message" | "createdAt">;
 
 export async function getFeedPostsWithOffset(
 	offset: number,
 	limit: number = 10
-) {
-	const feedPosts = await db
+): Promise<FeedPost[]> {
+	const feedPosts: FeedPost[] = await db
 		.select({
 			profilePicture: usersTable.profilePicture,
 			firstName: usersTable.firstName,
@@ -18,7 +19,7 @@ export async function getFeedPostsWithOffset(
 			message: feedTable.message,
 		})
 		.from(feedTable)
-		.leftJoin(usersTable, eq(feedTable.userId, usersTable.id))
+		.innerJoin(usersTable, eq(feedTable.userId, usersTable.id))
 		.offset(offset)
 		.limit(limit);
 

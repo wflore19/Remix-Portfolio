@@ -9,8 +9,8 @@ export type GuestBookEntry = Partial<User> & Partial<Book>;
 export async function getGuestBookEntriesWithOffset(
 	offset: number,
 	limit: number = 10
-) {
-	const guestBook = await db
+): Promise<GuestBookEntry[]> {
+	const guestBook: GuestBookEntry[] = await db
 		.select({
 			profilePicture: usersTable.profilePicture,
 			firstName: usersTable.firstName,
@@ -18,15 +18,15 @@ export async function getGuestBookEntriesWithOffset(
 			message: guestBookTable.message,
 		})
 		.from(guestBookTable)
-		.leftJoin(usersTable, eq(guestBookTable.userId, usersTable.id))
+		.innerJoin(usersTable, eq(guestBookTable.userId, usersTable.id))
 		.offset(offset)
 		.limit(limit);
 
 	return guestBook;
 }
 
-export async function getGuestBookEntries() {
-	const guestBook = await db
+export async function getGuestBookEntries(): Promise<GuestBookEntry[]> {
+	const guestBook: GuestBookEntry[] = await db
 		.select({
 			profilePicture: usersTable.profilePicture,
 			firstName: usersTable.firstName,
@@ -34,7 +34,7 @@ export async function getGuestBookEntries() {
 			message: guestBookTable.message,
 		})
 		.from(guestBookTable)
-		.leftJoin(usersTable, eq(guestBookTable.userId, usersTable.id))
+		.innerJoin(usersTable, eq(guestBookTable.userId, usersTable.id))
 		.orderBy(desc(guestBookTable.createdAt));
 
 	return guestBook;
