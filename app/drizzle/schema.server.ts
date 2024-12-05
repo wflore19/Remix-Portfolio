@@ -8,7 +8,7 @@ export const usersTable = pgTable("users", {
 	firstName: varchar("first_name", { length: 55 }).notNull(),
 	lastName: varchar("last_name", { length: 55 }).notNull(),
 	email: varchar({ length: 255 }).notNull().unique(),
-	profilePicture: varchar("profile_picture", { length: 255 }).default(""),
+	profilePicture: varchar("profile_picture", { length: 255 }).notNull(),
 });
 
 export const guestBookTable = pgTable("guest_book", {
@@ -29,8 +29,10 @@ export const projectsTable = pgTable("project", {
 		.notNull(),
 	name: varchar({ length: 255 }).notNull(),
 	description: varchar({ length: 255 }).notNull(),
+	tags: varchar("tags", { length: 255 }).notNull(),
 	githubUrl: varchar("github_url", { length: 255 }).notNull(),
 	imageUrl: varchar("image_url", { length: 255 }).notNull(),
+	websiteUrl: varchar("website_url", { length: 255 }).notNull(),
 });
 
 export const feedTable = pgTable("feed", {
@@ -42,15 +44,4 @@ export const feedTable = pgTable("feed", {
 		.notNull()
 		.references(() => usersTable.id),
 	message: varchar({ length: 255 }).notNull(),
-});
-
-export const tagsTable = pgTable("tags", {
-	id: integer().primaryKey().generatedAlwaysAsIdentity(),
-	createdAt: timestamp("created_at", { precision: 6, withTimezone: true })
-		.defaultNow()
-		.notNull(),
-	projectId: integer("project_id")
-		.notNull()
-		.references(() => projectsTable.id),
-	name: varchar({ length: 255 }).notNull(),
 });
