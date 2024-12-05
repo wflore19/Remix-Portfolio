@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 	if (!code) {
 		session.flash("error", "Google did not return a code");
-		return redirect("/login");
+		return redirect("/book");
 	}
 
 	try {
@@ -32,6 +32,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 		return loginUser(Number(user.id), session);
 	} catch (error) {
-		throw redirect("/login");
+		throw redirect("/book");
 	}
 };
