@@ -9,7 +9,7 @@ import type { LinksFunction } from "@remix-run/node";
 
 import "./styles.css";
 import "@radix-ui/themes/styles.css";
-import { Theme, ThemePanel } from "@radix-ui/themes";
+import { Theme } from "@radix-ui/themes";
 
 export const links: LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -37,9 +37,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
-				<Theme accentColor="blue" appearance="dark" radius="small">
+				<Theme
+					accentColor="blue"
+					appearance="dark"
+					radius="small"
+					grayColor="mauve">
 					{children}
-					<ThemePanel />
 				</Theme>
 				<ScrollRestoration />
 				<Scripts />
