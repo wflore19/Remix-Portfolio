@@ -86,7 +86,9 @@ export default function Layout() {
 					</Flex>
 				</Box>
 
-				<Outlet />
+				<Box>
+					<Outlet />
+				</Box>
 			</Flex>
 		</Box>
 	);

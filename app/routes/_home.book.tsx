@@ -53,93 +53,91 @@ export default function BookPage() {
 	return (
 		<Suspense fallback={<Spinner />}>
 			<Await resolve={[guestBook]}>
-				<Box my={"5"}>
-					{!hasAuth ? (
-						<Flex direction={"column"} gap={"3"} align={"center"}>
-							<Text>Sign the guest book</Text>
-							<GoogleButton href={`${googleAuthURL}`} />
-						</Flex>
-					) : (
-						<Box my={"5"}>
-							<Form method="post" reloadDocument>
-								<Flex direction="column" gap="2">
-									<TextArea
-										name="message"
-										size={"3"}
-										placeholder="Leave a message :)"
-										value={textAreaValue}
-										onChange={(event) => {
-											setTextAreaValue(event.target.value);
+				{!hasAuth ? (
+					<Flex direction={"column"} gap={"3"} align={"center"}>
+						<Text>Sign the guest book</Text>
+						<GoogleButton href={`${googleAuthURL}`} />
+					</Flex>
+				) : (
+					<Box mb={"7"}>
+						<Form method="post" reloadDocument>
+							<Flex direction="column" gap="2">
+								<TextArea
+									name="message"
+									size={"3"}
+									placeholder="Leave a message :)"
+									value={textAreaValue}
+									onChange={(event) => {
+										setTextAreaValue(event.target.value);
+									}}
+								/>
+								<Box>
+									<Button
+										type="submit"
+										variant="solid"
+										size={{ initial: "3", md: "2" }}
+										disabled={!textAreaValue}>
+										<RiEditLine size={20} /> Post
+									</Button>
+								</Box>
+							</Flex>
+						</Form>
+					</Box>
+				)}
+				<Box>
+					{guestBook.map((post, idx) => {
+						return (
+							<Box key={idx}>
+								<Box width={"full"}>
+									<Flex justify={"between"}>
+										<Box>
+											<Flex gap="3" align="center" mb="2">
+												<Avatar
+													src={post.profilePicture || undefined}
+													radius="full"
+													fallback={post.firstName![0]}
+												/>
+												<Flex
+													direction="column"
+													gap={{
+														initial: "0",
+														md: "1",
+													}}>
+													<Text
+														size={{
+															initial: "4",
+															md: "2",
+														}}
+														weight="medium">
+														{`${post.firstName}`}
+													</Text>
+													<Text
+														size={{
+															initial: "1",
+															md: "2",
+														}}>
+														{getTimeAgo(post.createdAt!)}
+													</Text>
+												</Flex>
+											</Flex>
+										</Box>
+									</Flex>
+									<Text
+										as="p"
+										size={{ initial: "3", md: "2" }}
+										mb="2"
+										dangerouslySetInnerHTML={{
+											__html: post.message!,
 										}}
 									/>
-									<Box>
-										<Button
-											type="submit"
-											variant="solid"
-											size={{ initial: "3", md: "2" }}
-											disabled={!textAreaValue}>
-											<RiEditLine size={20} /> Post
-										</Button>
-									</Box>
-								</Flex>
-							</Form>
-						</Box>
-					)}
-					<Box>
-						{guestBook.map((post, idx) => {
-							return (
-								<Box key={idx}>
-									<Box width={"full"}>
-										<Flex justify={"between"}>
-											<Box>
-												<Flex gap="3" align="center" mb="2">
-													<Avatar
-														src={post.profilePicture || undefined}
-														radius="full"
-														fallback={post.firstName![0]}
-													/>
-													<Flex
-														direction="column"
-														gap={{
-															initial: "0",
-															md: "1",
-														}}>
-														<Text
-															size={{
-																initial: "4",
-																md: "2",
-															}}
-															weight="medium">
-															{`${post.firstName}`}
-														</Text>
-														<Text
-															size={{
-																initial: "1",
-																md: "2",
-															}}>
-															{getTimeAgo(post.createdAt!)}
-														</Text>
-													</Flex>
-												</Flex>
-											</Box>
-										</Flex>
-										<Text
-											as="p"
-											size={{ initial: "3", md: "2" }}
-											mb="2"
-											dangerouslySetInnerHTML={{
-												__html: post.message!,
-											}}
-										/>
-									</Box>
-
-									{idx !== post.message!.length && (
-										<Separator my="5" size="4" color="gray" />
-									)}
 								</Box>
-							);
-						})}
-					</Box>
+
+								{idx !== post.message!.length && (
+									<Separator my="5" size="4" color="gray" />
+								)}
+							</Box>
+						);
+					})}
 				</Box>
 			</Await>
 		</Suspense>
