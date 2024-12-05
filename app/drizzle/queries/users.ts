@@ -43,7 +43,7 @@ export async function createUser(
 ) {
 	return await db
 		.insert(usersTable)
-		.values({ email, firstName, lastName })
+		.values({ email, firstName, lastName, profilePicture: "" })
 		.returning({ insertedId: usersTable.id });
 }
 
