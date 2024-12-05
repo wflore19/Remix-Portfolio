@@ -1,4 +1,5 @@
 import {
+	Badge,
 	Box,
 	Flex,
 	Heading,
@@ -13,6 +14,7 @@ import { Suspense } from "react";
 import { db } from "~/drizzle/db.server";
 import { Projects } from "~/drizzle/queries/project";
 import { projectsTable } from "~/drizzle/schema.server";
+import { Colors, getRandomColor } from "~/utils/colors";
 
 export async function loader() {
 	const projects: Projects[] = await db.select().from(projectsTable);
@@ -29,33 +31,48 @@ export default function ProjectsPage() {
 					{projects.map((project, idx) => {
 						return (
 							<Box key={idx} my={"3"}>
-								<img
-									src={project.imageUrl}
-									alt={project.name}
-									style={{
-										objectFit: "cover",
-										width: "100%",
-										height: "13rem",
-										objectPosition: "50% 5%",
-									}}
-								/>
-								<Flex
-									gap={"1"}
-									align={{ initial: "start", sm: "center" }}
-									direction={{
-										initial: "column",
-										sm: "row",
-									}}>
-									<Heading size={"3"}>{project.name}</Heading>
+								<Link href={project.websiteUrl} target={"_blank"}>
+									<div
+										style={{
+											borderRadius: "10% 30% 50% 70%; !important",
+										}}>
+										<img
+											src={project.imageUrl}
+											alt={project.name}
+											style={{
+												objectFit: "cover",
+												width: "100%",
+												height: "15rem",
+												objectPosition: "50% 5%",
+												borderRadius: "10% 30% 50% 70%; !important",
+											}}
+										/>
+									</div>
+								</Link>
+								<Flex gap={"1"} direction={"column"}>
+									<Flex key={idx} gap={"1"} align={"center"} mt={"2"}>
+										{project.tags.split(",").map((tag, idx) => {
+											const color = getRandomColor() as Colors;
+											return (
+												<Badge
+													key={idx}
+													variant="outline"
+													color={color}>
+													{tag.charAt(0).toUpperCase() +
+														tag.slice(1)}
+												</Badge>
+											);
+										})}
+									</Flex>
+									<Heading>{project.name}</Heading>
 									<Box>
 										<Link
 											href={project.githubUrl}
-											target={"_blank"}>
+											target={"_blank"}
+											style={{ display: "inline-block" }}>
 											<Flex gap={"1"} align={"center"}>
 												<RiLink size={12} />
-												<Text size={"1"}>
-													{project.githubUrl}
-												</Text>
+												<Text size={"1"}>{project.githubUrl}</Text>
 											</Flex>
 										</Link>
 									</Box>

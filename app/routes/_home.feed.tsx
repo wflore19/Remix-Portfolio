@@ -1,58 +1,29 @@
-import {
-	Avatar,
-	Box,
-	Button,
-	Flex,
-	Spinner,
-	TextArea,
-	Text,
-	Separator,
-} from "@radix-ui/themes";
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { Await, Form, redirect, useLoaderData } from "@remix-run/react";
-import { RiEditLine } from "@remixicon/react";
-import React, { Suspense } from "react";
-import {
-	FeedPost,
-	createFeedPost,
-	getFeedPostsWithOffset,
-} from "~/drizzle/queries/feed";
-import { getUserById } from "~/drizzle/queries/users";
-import { getGoogleAuthURL } from "~/utils/auth";
+import { Avatar, Box, Flex, Spinner, Text, Separator } from "@radix-ui/themes";
+import { ActionFunctionArgs } from "@remix-run/node";
+import { Await, redirect, useLoaderData } from "@remix-run/react";
+import { Suspense } from "react";
+import { FeedPost, createFeedPost, getFeedPosts } from "~/drizzle/queries/feed";
 import { getTimeAgo } from "~/utils/format";
-import { ensureUserAuthenticated, user } from "~/utils/session.server";
+import {
+	ensureUserAuthenticated,
+	getSession,
+	user,
+} from "~/utils/session.server";
 
-export async function loader({ request }: LoaderFunctionArgs) {
-	const session = await ensureUserAuthenticated(request);
-	const feed = await getFeedPostsWithOffset(0);
+export async function loader() {
+	const feed = await getFeedPosts();
 
-	let userId;
-	if (session) {
-		userId = user(session);
-		const userProfile = await getUserById(userId);
-
-		if (userProfile.email === process.env.EMAIL) {
-			return { feed: feed ?? [], userId };
-		}
-	}
-
-	const googleAuthURL: string = await getGoogleAuthURL();
-	return { feed: feed ?? [], userId: undefined, googleAuthURL };
+	return feed;
 }
 
 export default function FeedPage() {
-	const { feed, userId } = useLoaderData() as {
-		feed: FeedPost[];
-		userId: number | undefined;
-	};
-
-	const [textAreaValue, setTextAreaValue] = React.useState("");
+	const feed = useLoaderData() as FeedPost[];
 
 	return (
 		<Suspense fallback={<Spinner />}>
 			<Await resolve={[feed]}>
 				<Box my={"5"}>
-					{userId && (
+					{/* {userId && (
 						<Box my={"5"}>
 							<Form method="post">
 								<Flex direction="column" gap="2">
@@ -62,9 +33,7 @@ export default function FeedPage() {
 										placeholder="What's on your mind?"
 										value={textAreaValue}
 										onChange={(event) => {
-											setTextAreaValue(
-												event.target.value
-											);
+											setTextAreaValue(event.target.value);
 										}}
 									/>
 									<Box>
@@ -79,7 +48,7 @@ export default function FeedPage() {
 								</Flex>
 							</Form>
 						</Box>
-					)}
+					)} */}
 					<Box>
 						{feed.map((post, idx) => {
 							return (
@@ -87,19 +56,11 @@ export default function FeedPage() {
 									<Box width={"full"}>
 										<Flex justify={"between"}>
 											<Box>
-												<Flex
-													gap="3"
-													align="center"
-													mb="2">
+												<Flex gap="3" align="center" mb="2">
 													<Avatar
-														src={
-															post.profilePicture ||
-															undefined
-														}
+														src={post.profilePicture || undefined}
 														radius="full"
-														fallback={
-															post.firstName![0]
-														}
+														fallback={post.firstName![0]}
 													/>
 													<Flex
 														direction="column"
@@ -120,9 +81,7 @@ export default function FeedPage() {
 																initial: "1",
 																md: "2",
 															}}>
-															{getTimeAgo(
-																post.createdAt!
-															)}
+															{getTimeAgo(post.createdAt!)}
 														</Text>
 													</Flex>
 												</Flex>
@@ -139,11 +98,7 @@ export default function FeedPage() {
 									</Box>
 
 									{idx !== post.message!.length - 1 && (
-										<Separator
-											my="5"
-											size="4"
-											color="gray"
-										/>
+										<Separator my="5" size="4" color="gray" />
 									)}
 								</Box>
 							);
@@ -156,18 +111,20 @@ export default function FeedPage() {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-	const session = await ensureUserAuthenticated(request);
-	if (!session) {
+	const hasAuth = await ensureUserAuthenticated(request);
+	if (!hasAuth) {
 		throw redirect("/feed");
 	}
 
-	const userId = user(session);
-
-	const formData = await request.formData();
-	const message = String(formData.get("message"));
-
 	try {
-		await createFeedPost(userId, message);
+		const formData = await request.formData();
+		const session = await getSession(request);
+		const userId = user(session);
+
+		const message = String(formData.get("message"));
+		if (!message) throw new Error("Message is required");
+
+		await createFeedPost(userId, message.toString());
 		return redirect("/feed");
 	} catch (error) {
 		throw new Error("Failed to create post");

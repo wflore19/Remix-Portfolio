@@ -1,23 +1,10 @@
-import {
-	Box,
-	Card,
-	Flex,
-	Tabs,
-	Text,
-	Spinner,
-	Heading,
-	Avatar,
-} from "@radix-ui/themes";
+import { Box, Flex, Text, Heading, Avatar } from "@radix-ui/themes";
 import { LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
-import { db } from "~/drizzle/db.server";
-import { usersTable } from "~/drizzle/schema.server";
-import { Await, NavLink, Outlet, useLoaderData } from "@remix-run/react";
-import { eq } from "drizzle-orm";
-import { Suspense } from "react";
+import { NavLink, Outlet } from "@remix-run/react";
 import { RiContactsBookLine, RiStackLine, RiUserLine } from "@remixicon/react";
-import { User } from "~/drizzle/queries/users";
+import React from "react";
 import { getGoogleAuthURL } from "~/utils/auth";
-import { getSession } from "~/utils/session.server";
+import { ensureUserAuthenticated } from "~/utils/session.server";
 
 export const meta: MetaFunction = () => {
 	return [
@@ -31,118 +18,114 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const session = await getSession(request);
-
-	const [user] = await db
-		.select()
-		.from(usersTable)
-		.where(eq(usersTable.id, 1));
-
-	if (!session.has("user_id")) {
-		const googleAuthURL: string = await getGoogleAuthURL();
-		return { user, googleAuthURL };
+	const isAuth = await ensureUserAuthenticated(request);
+	const googleAuthURL: string = await getGoogleAuthURL();
+	if (!isAuth) {
+		return { hasAuth: false, googleAuthURL }; // Not authenticated
 	}
 
-	return { user, googleAuthURL: undefined };
+	return { hasAuth: true, googleAuthURL: "" }; // Authenticated
 }
 
+const pages = [
+	{
+		title: "Feed",
+		path: "/feed",
+		icon: <RiUserLine size={20} />,
+	},
+	{
+		title: "Guest Book",
+		path: "/book",
+		icon: <RiContactsBookLine size={20} />,
+	},
+	{
+		title: "Projects",
+		path: "/projects",
+		icon: <RiStackLine size={20} />,
+	},
+];
+type Page = {
+	title: string;
+	path: string;
+	icon: React.ReactNode;
+};
+
+export type HomeData = {
+	hasAuth: boolean;
+	googleAuthURL: string;
+};
+
 export default function Layout() {
-	const { user } = useLoaderData<{
-		user: User;
-	}>();
+	return (
+		<Box width={"full"} maxWidth={"800px"} my={"7"} mx={"auto"}>
+			<Flex direction="column" gap="3">
+				<Heading weight="bold">wflore19 Portfolio</Heading>
+
+				<Flex>
+					<Avatar
+						src="https://campus-connect.nyc3.cdn.digitaloceanspaces.com/Wilfredo-Flores-18.jpg"
+						fallback="https://campus-connect.nyc3.digitaloceanspaces.com/Wilfredo-Flores-18.jpg"
+						alt="Wilfredo Flores profile picture"
+						radius={"full"}
+						mt={"3"}
+					/>
+					<Flex direction={"column"} ml={"3"} mt={"7"}>
+						<Flex direction={"column"} gap={"0"}>
+							<Text>Wilfredo Flores</Text>
+						</Flex>
+
+						<Text>Full-stack web developer</Text>
+					</Flex>
+				</Flex>
+
+				<Box minWidth={"100%"} mx={"auto"}>
+					<Flex justify={"center"}>
+						{pages.map((page, idx) => {
+							return <NavItem key={idx} page={page} />;
+						})}
+					</Flex>
+				</Box>
+
+				<Outlet />
+			</Flex>
+		</Box>
+	);
+}
+
+function NavItem({ page }: { page: Page }) {
+	const [isHover, setIsHover] = React.useState(false);
 
 	return (
-		<Suspense fallback={<Spinner />}>
-			<Await resolve={[user]}>
-				<div className="htmlRoot">
-					<Box width={"full"} maxWidth={"800px"} mx={"auto"}>
-						<Card size="3">
-							<Flex direction="column" gap="3">
-								<Heading size={"8"} weight="bold" mt={"8"}>
-									wflore19 Portfolio
-								</Heading>
-
-								<Flex>
-									<Avatar
-										src={user.profilePicture!}
-										fallback={user.firstName[0]}
-										alt={user.firstName}
-										size={"8"}
-										radius={"full"}
-										mt={"3"}
-									/>
-									<Flex
-										direction={"column"}
-										ml={"3"}
-										mt={"7"}>
-										<Flex direction={"column"} gap={"0"}>
-											<Text>{user.firstName}</Text>
-										</Flex>
-
-										<Text>Full-stack web developer</Text>
-									</Flex>
-								</Flex>
-
-								<Tabs.Root defaultValue="feed" mt={"3"}>
-									<Tabs.List size={"2"}>
-										<Tabs.Trigger value="feed">
-											<NavLink
-												to="/feed"
-												style={{
-													textDecoration: "none",
-													color: "inherit",
-													width: "100%",
-												}}>
-												<Flex align={"center"}>
-													<RiUserLine size={20} />
-													<Text size={"5"} ml={"2"}>
-														Feed
-													</Text>
-												</Flex>
-											</NavLink>
-										</Tabs.Trigger>
-										<Tabs.Trigger value="book">
-											<NavLink
-												to="/book"
-												style={{
-													textDecoration: "none",
-													color: "inherit",
-													width: "100%",
-												}}>
-												<Flex align={"center"}>
-													<RiContactsBookLine
-														size={20}
-													/>
-													<Text size={"5"} ml={"2"}>
-														Guest Book
-													</Text>
-												</Flex>
-											</NavLink>
-										</Tabs.Trigger>
-										<Tabs.Trigger value="projects">
-											<NavLink
-												to="/projects"
-												style={{
-													textDecoration: "none",
-													color: "inherit",
-													width: "100%",
-												}}>
-												<Flex align={"center"}>
-													<RiStackLine size={20} />
-													<Text size={"5"} ml={"2"}>
-														Projects
-													</Text>
-												</Flex>
-											</NavLink>
-										</Tabs.Trigger>
-									</Tabs.List>
-								</Tabs.Root>
-								<Outlet />
-							</Flex>
-						</Card>
-					</Box>
-				</div>
-			</Await>
-		</Suspense>
+		<NavLink
+			to={page.path}
+			style={{
+				textDecoration: "none",
+				color: "inherit",
+				width: "33%",
+			}}
+			onMouseEnter={() => setIsHover(true)}
+			onMouseLeave={() => setIsHover(false)}>
+			{({ isActive }) => (
+				<React.Fragment>
+					<Flex
+						align={"center"}
+						justify={"center"}
+						style={{
+							minHeight: "3rem",
+							backgroundColor: isActive
+								? "var(--blue-3)"
+								: isHover
+								? "var(--blue-2)"
+								: "transparent",
+							transition: "background-color 0.2s ease-in-out",
+						}}>
+						{page.icon}
+						<Text size={"5"} ml={"2"}>
+							{page.title}
+						</Text>
+					</Flex>
+				</React.Fragment>
+			)}
+		</NavLink>
 	);
 }
