@@ -45,25 +45,24 @@ export async function getSession(request: Request) {
 /**
  * Ensure the user is authenticated
  * @param request - The request object
- * @param options - The options object
- * @returns The session object if the user is authenticated, otherwise redirects to the login page
+ * @returns boolean - Whether the user is authenticated
  */
 export async function ensureUserAuthenticated(
 	request: Request
-): Promise<Session | undefined> {
+): Promise<boolean> {
 	const session = await getSession(request);
 	if (!session.has("user_id")) {
-		return undefined;
+		return false;
 	}
 
 	const userId = await user(session);
 	const isExistingUser = await getUserById(userId);
 
 	if (!isExistingUser) {
-		return undefined;
+		return false;
 	}
 
-	return session;
+	return true;
 }
 
 /**
