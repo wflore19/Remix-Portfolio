@@ -15,7 +15,7 @@ import { getTimeAgo, isNew } from "~/utils/format";
 import {
 	ensureUserAuthenticated,
 	getSession,
-	user,
+	getUserId,
 } from "~/utils/session.server";
 
 export async function loader() {
@@ -128,7 +128,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	try {
 		const formData = await request.formData();
 		const session = await getSession(request);
-		const userId = user(session);
+		const userId = getUserId(session);
 
 		const message = String(formData.get("message"));
 		if (!message) throw new Error("Message is required");

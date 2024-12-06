@@ -55,7 +55,7 @@ export async function ensureUserAuthenticated(
 		return false;
 	}
 
-	const userId = await user(session);
+	const userId = await getUserId(session);
 	const isExistingUser = await getUserById(userId);
 
 	if (!isExistingUser) {
@@ -70,7 +70,7 @@ export async function ensureUserAuthenticated(
  * @param session - The session object
  * @returns The user ID
  */
-export function user(session: Session): number {
+export function getUserId(session: Session): number {
 	const sessionId = parseInt(session.get("user_id"));
 	return sessionId;
 }
