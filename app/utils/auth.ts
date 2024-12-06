@@ -111,14 +111,14 @@ export async function signupNewUser(
 	googleUser: GoogleUserType,
 	session: Session
 ) {
-	const parsedFirstName = googleUser.name.split(" ")[0];
-	const parsedLastName =
-		googleUser.name.split(" ")[googleUser.name.split(" ").length - 1];
+	// const parsedFirstName = googleUser.name.split(" ")[0];
+	// const parsedLastName =
+	// 	googleUser.name.split(" ")[googleUser.name.split(" ").length - 1];
 
 	const user = await createUser(
 		googleUser.email,
-		parsedFirstName,
-		parsedLastName
+		googleUser.given_name,
+		googleUser.family_name ?? ""
 	);
 
 	const profilePictureUrl = await uploadImageToSpaces(
