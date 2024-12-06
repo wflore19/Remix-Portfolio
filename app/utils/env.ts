@@ -2,7 +2,7 @@ import { config } from "dotenv";
 
 config();
 
-if (!process.env.GOOGLE_ANALYTICS)
+if (!process.env.GA_TRACKING_ID)
 	console.warn("Google Analytics ID is not provided");
 
 if (!process.env.GOOGLE_CLIENT_ID)
@@ -25,7 +25,7 @@ if (!process.env.STORAGE_ENDPOINT)
 
 if (!process.env.DATABASE_URL) console.warn("Database URL is not provided");
 
-export const GOOGLE_ANALYTICS = process.env.GOOGLE_ANALYTICS || "";
+export const GA_TRACKING_ID = process.env.GA_TRACKING_ID || "";
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "";
 export const APP_URL = process.env.APP_URL || "";

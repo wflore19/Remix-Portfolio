@@ -7,6 +7,7 @@ import {
 	useLoaderData,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
+import { GA_TRACKING_ID } from "~/utils/env";
 
 import "./styles.css";
 import "@radix-ui/themes/styles.css";
@@ -27,7 +28,7 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader() {
-	return { gaTrackingId: process.env.GA_TRACKING_ID };
+	return { gaTrackingId: GA_TRACKING_ID };
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
