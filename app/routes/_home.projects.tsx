@@ -31,10 +31,7 @@ export default function ProjectsPage() {
 					return (
 						<Box key={idx} my={"3"}>
 							<Link href={project.websiteUrl} target={"_blank"}>
-								<div
-									style={{
-										borderRadius: "10% 30% 50% 70%; !important",
-									}}>
+								<div>
 									<img
 										src={project.imageUrl}
 										alt={project.name}
@@ -43,7 +40,6 @@ export default function ProjectsPage() {
 											width: "100%",
 											height: "15rem",
 											objectPosition: "50% 5%",
-											borderRadius: "10% 30% 50% 70%; !important",
 										}}
 									/>
 								</div>
