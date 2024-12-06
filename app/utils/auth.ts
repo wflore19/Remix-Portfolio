@@ -123,7 +123,9 @@ export async function signupNewUser(
 
 	const profilePictureUrl = await uploadImageToSpaces(
 		googleUser.picture,
-		`${parsedFirstName}-${parsedLastName}-${user[0].insertedId.toString()}.jpg`
+		`${googleUser.given_name}-${
+			googleUser.family_name
+		}-${user[0].insertedId.toString()}.jpg`
 	);
 
 	const profilePictureCDNurl = profilePictureUrl.replace(
