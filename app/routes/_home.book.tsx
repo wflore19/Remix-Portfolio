@@ -9,7 +9,11 @@ import {
 	Text,
 	TextArea,
 } from "@radix-ui/themes";
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import {
+	ActionFunctionArgs,
+	LoaderFunctionArgs,
+	MetaFunction,
+} from "@remix-run/node";
 import {
 	Await,
 	Form,
@@ -33,6 +37,19 @@ import {
 } from "~/utils/session.server";
 import { HomeData } from "./_home";
 import { getUserById, User } from "~/drizzle/queries/users";
+
+export const meta: MetaFunction = () => {
+	return [
+		{ title: "wflore19 Portfolio" },
+		{
+			name: "description",
+			content:
+				"wflore19 Portfolio. Built with Remix, Drizzle, PostgreSQL, and Radix Themes.",
+			"og:image":
+				"https://campus-connect.nyc3.cdn.digitaloceanspaces.com/GSB-TR1-RED-3_3dc45ac9-889a-4fa9-8aa3-e36e02a16caf.webp",
+		},
+	];
+};
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const session = await getSession(request);
