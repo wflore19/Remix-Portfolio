@@ -148,7 +148,7 @@ export default function Layout() {
 					</Flex>
 				</Box>
 
-				<Box>
+				<Box px={"5"}>
 					<Outlet />
 				</Box>
 			</Flex>
