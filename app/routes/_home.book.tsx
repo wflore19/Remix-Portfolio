@@ -124,7 +124,7 @@ export default function BookPage() {
 												/>
 												<Flex direction="column">
 													<Text weight="medium">
-														{`${post.firstName}`}
+														{`${post.firstName} ${post.lastName}`}
 													</Text>
 													<Text size={"1"}>
 														{getTimeAgo(post.createdAt!)}{" "}
