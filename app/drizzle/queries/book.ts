@@ -2,6 +2,7 @@ import { desc, eq, InferSelectModel } from "drizzle-orm";
 import { guestBookTable, usersTable } from "../schema.server";
 import { db } from "../db.server";
 import { User } from "./users";
+import { lastNames } from "drizzle-seed";
 
 export type Book = InferSelectModel<typeof guestBookTable>;
 export type GuestBookEntry = Partial<User> & Partial<Book>;
@@ -30,6 +31,7 @@ export async function getGuestBookEntries(): Promise<GuestBookEntry[]> {
 		.select({
 			profilePicture: usersTable.profilePicture,
 			firstName: usersTable.firstName,
+			lastName: usersTable.lastName,
 			createdAt: guestBookTable.createdAt,
 			message: guestBookTable.message,
 		})
