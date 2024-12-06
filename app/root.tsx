@@ -4,12 +4,14 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	useLoaderData,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 
 import "./styles.css";
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
+import React from "react";
 
 export const links: LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -24,7 +26,13 @@ export const links: LinksFunction = () => [
 	},
 ];
 
+export async function loader() {
+	return { gaTrackingId: process.env.GA_TRACKING_ID };
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+	const { gaTrackingId } = useLoaderData<typeof loader>();
+
 	return (
 		<html lang="en">
 			<head>
@@ -37,6 +45,29 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
+				{process.env.NODE_ENV === "development" || !gaTrackingId ? null : (
+					<>
+						<script
+							async
+							src={`https://www.googletagmanager.com/gtag/js?id=${gaTrackingId}`}
+						/>
+						<script
+							async
+							id="gtag-init"
+							dangerouslySetInnerHTML={{
+								__html: `
+									window.dataLayer = window.dataLayer || [];
+									function gtag(){dataLayer.push(arguments);}
+									gtag('js', new Date());
+
+									gtag('config', '${gaTrackingId}', {
+										page_path: window.location.pathname,
+									});
+								`,
+							}}
+						/>
+					</>
+				)}
 				<Theme
 					accentColor="blue"
 					appearance="dark"
