@@ -15,6 +15,7 @@ export async function getGuestBookEntriesWithOffset(
 		.select({
 			profilePicture: usersTable.profilePicture,
 			firstName: usersTable.firstName,
+			lastName: usersTable.lastName,
 			createdAt: guestBookTable.createdAt,
 			message: guestBookTable.message,
 		})
