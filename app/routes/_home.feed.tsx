@@ -1,9 +1,17 @@
-import { Avatar, Box, Flex, Spinner, Text, Separator } from "@radix-ui/themes";
+import {
+	Avatar,
+	Box,
+	Flex,
+	Spinner,
+	Text,
+	Separator,
+	Badge,
+} from "@radix-ui/themes";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { Await, redirect, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 import { FeedPost, createFeedPost, getFeedPosts } from "~/drizzle/queries/feed";
-import { getTimeAgo } from "~/utils/format";
+import { getTimeAgo, isNew } from "~/utils/format";
 import {
 	ensureUserAuthenticated,
 	getSession,
@@ -75,12 +83,15 @@ export default function FeedPage() {
 														weight="medium">
 														{`${post.firstName}`}
 													</Text>
-													<Text
-														size={{
-															initial: "1",
-															md: "2",
-														}}>
+													<Text size={"1"}>
 														{getTimeAgo(post.createdAt!)}
+														{isNew(post.createdAt!) && (
+															<Badge
+																variant="outline"
+																color="green">
+																New
+															</Badge>
+														)}
 													</Text>
 												</Flex>
 											</Flex>
