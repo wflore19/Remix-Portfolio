@@ -9,7 +9,7 @@ import {
 	Text,
 	TextArea,
 } from "@radix-ui/themes";
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import {
 	Await,
 	Form,
@@ -29,21 +29,29 @@ import { getTimeAgo, isNew } from "~/utils/format";
 import {
 	ensureUserAuthenticated,
 	getSession,
-	user,
+	getUserId,
 } from "~/utils/session.server";
 import { HomeData } from "./_home";
+import { getUserById, User } from "~/drizzle/queries/users";
 
-export async function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
+	const session = await getSession(request);
+	const userId = getUserId(session);
+
+	const user = await getUserById(userId);
 	const guestBook = await getGuestBookEntries();
 
-	return guestBook;
+	return { user, guestBook };
 }
 
 export default function BookPage() {
 	const { hasAuth, googleAuthURL } = useRouteLoaderData(
 		"routes/_home"
 	) as HomeData;
-	const guestBook = useLoaderData() as GuestBookEntry[];
+	const { user, guestBook } = useLoaderData() as {
+		user: User;
+		guestBook: GuestBookEntry[];
+	};
 
 	const [textAreaValue, setTextAreaValue] = React.useState("");
 
@@ -61,6 +69,14 @@ export default function BookPage() {
 					</Flex>
 				) : (
 					<Box mb={"7"}>
+						<Flex gap="3" align="center" mb="3">
+							<Avatar
+								src={user.profilePicture || undefined}
+								radius="full"
+								fallback={user.firstName![0]}
+							/>
+							<Text weight="medium">{`${user.firstName} ${user.lastName}`}</Text>
+						</Flex>
 						<Form method="post" reloadDocument>
 							<Flex direction="column" gap="2">
 								<TextArea
@@ -147,7 +163,7 @@ export async function action({ request }: ActionFunctionArgs) {
 	try {
 		const formData = await request.formData();
 		const session = await getSession(request);
-		const userId = user(session);
+		const userId = getUserId(session);
 
 		const message = formData.get("message");
 
