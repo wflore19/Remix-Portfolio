@@ -35,13 +35,19 @@ import { HomeData } from "./_home";
 import { getUserById, User } from "~/drizzle/queries/users";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const session = await getSession(request);
-	const userId = getUserId(session);
-
-	const user = await getUserById(userId);
+	const hasAuth = await ensureUserAuthenticated(request);
 	const guestBook = await getGuestBookEntries();
 
-	return { user, guestBook };
+	if (hasAuth) {
+		const session = await getSession(request);
+		const userId = getUserId(session);
+
+		const user = await getUserById(userId);
+
+		return { user, guestBook };
+	}
+
+	return { user: undefined, guestBook };
 }
 
 export default function BookPage() {
@@ -49,7 +55,7 @@ export default function BookPage() {
 		"routes/_home"
 	) as HomeData;
 	const { user, guestBook } = useLoaderData() as {
-		user: User;
+		user: User | undefined;
 		guestBook: GuestBookEntry[];
 	};
 
@@ -62,7 +68,7 @@ export default function BookPage() {
 	return (
 		<Suspense fallback={<Spinner />}>
 			<Await resolve={[guestBook]}>
-				{!hasAuth ? (
+				{!hasAuth && !user ? (
 					<Flex direction={"column"} gap={"3"} align={"center"}>
 						<Text>Sign the guest book</Text>
 						<GoogleButton href={`${googleAuthURL}`} />
@@ -71,11 +77,13 @@ export default function BookPage() {
 					<Box mb={"7"}>
 						<Flex gap="3" align="center" mb="3">
 							<Avatar
-								src={user.profilePicture || undefined}
+								src={user!.profilePicture || undefined}
 								radius="full"
-								fallback={user.firstName![0]}
+								fallback={user!.firstName![0]}
 							/>
-							<Text weight="medium">{`${user.firstName} ${user.lastName}`}</Text>
+							<Text weight="medium">{`${user!.firstName} ${
+								user!.lastName
+							}`}</Text>
 						</Flex>
 						<Form method="post" reloadDocument>
 							<Flex direction="column" gap="2">
