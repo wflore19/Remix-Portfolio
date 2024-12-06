@@ -70,7 +70,7 @@ export default function BookPage() {
 			<Await resolve={[guestBook]}>
 				{!hasAuth && !user ? (
 					<Flex direction={"column"} gap={"3"} align={"center"}>
-						<Text>Sign the guest book</Text>
+						<Text>Sign in to leave a message 📫</Text>
 						<GoogleButton href={`${googleAuthURL}`} />
 					</Flex>
 				) : (
